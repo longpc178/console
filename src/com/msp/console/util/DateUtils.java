@@ -16,20 +16,18 @@ public class DateUtils {
      * @return boolean
      */
     public static boolean isValidDate(String date, String format) {
+        if (StringUtils.isNullOrBlank(date)) return false;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        dateFormat.setLenient(false);
+        if (date.length() != dateFormat.toPattern().length()) {
+            return false;
 
-        if (!StringUtils.isNullOrBlank(date)) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            dateFormat.setLenient(false);
-            if (date.length() != dateFormat.toPattern().length()) {
-                return false;
-
-            }
-            try {
-                dateFormat.parse(date);
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                return false;
-            }
+        }
+        try {
+            dateFormat.parse(date);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            return false;
         }
         return true;
     }

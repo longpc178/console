@@ -159,7 +159,7 @@ public class MainClass {
         System.out.println("Chọn học sinh theo danh sách dưới đây:");
         int len = students.length;
         for (int i = 0; i < len; i++) {
-            System.out.println(i + ". " + students[i].toStringNoSubjects());
+            System.out.println(i + ". " + students[i].toString());
         }
 
         int selection = sc.nextInt();
@@ -238,7 +238,7 @@ public class MainClass {
         boolean isHasStudent = false;
         for (StudentModel student : students) {
             if (!isNullOrBlank(student.getClassCode()) && compareString(student.getClassCode(), val)) {
-                System.out.println(student.toStringNoSubjects());
+                System.out.println(student.toString());
                 isHasStudent = true;
             }
         }
@@ -284,7 +284,7 @@ public class MainClass {
                     student.getRating() > 0) {
                 cal.setTime(student.getDateOfBirth());
                 if (cal.get(YEAR) == val) {
-                    System.out.println(student.toStringNoSubjects());
+                    System.out.println(student.toString());
                     amount++;
                 }
             }
@@ -310,7 +310,7 @@ public class MainClass {
                 }
             }
             if ((sum / 27) < 5) { //tổng cả 3 năm
-                System.out.println(student.toStringNoSubjects() + " - Điểm trung bình: " + (Math.round(sum / 9 * 100) / 100.0));
+                System.out.println(student.toString() + " - Điểm trung bình: " + (Math.round(sum / 9 * 100) / 100.0));
             }
         }
     }
