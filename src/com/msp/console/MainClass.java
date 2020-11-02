@@ -5,7 +5,6 @@ import com.msp.console.model.SubjectModel;
 import com.msp.console.util.StringUtils;
 import com.msp.console.util.SubjectEnum;
 
-import java.util.Calendar;
 import java.util.Scanner;
 
 import static com.msp.console.util.DateUtils.convertStringtoDate;
@@ -13,7 +12,6 @@ import static com.msp.console.util.DateUtils.isValidDate;
 import static com.msp.console.util.FormatDate.FORMAT_6;
 import static com.msp.console.util.StringUtils.*;
 import static com.msp.console.util.SubjectEnum.values;
-import static java.util.Calendar.YEAR;
 
 public class MainClass {
 
@@ -88,6 +86,8 @@ public class MainClass {
             code = sc.nextLine();
             if (isStudentCodeExist(code)) {
                 System.out.println("Mã học sinh đã tồn tại!");
+            } else if (foundModel == null && isNullOrBlank(code)) {
+                System.out.println("Bắt buộc nhập mã học sinh!");
             } else {
                 break;
             }
@@ -99,7 +99,15 @@ public class MainClass {
         }
 
         System.out.println("Tên học sinh: ");
-        String name = sc.nextLine();
+        String name;
+        do {
+            name = sc.nextLine();
+            if (foundModel == null && isNullOrBlank(name)) {
+                System.out.println("Bắt buộc nhập tên học sinh!");
+            } else {
+                break;
+            }
+        } while (sc.hasNextLine());
         if (foundModel != null && isNullOrBlank(name)) {
             student.setFullName(foundModel.getFullName());
         } else {
@@ -110,7 +118,9 @@ public class MainClass {
         String dateOfBirth;
         do {
             dateOfBirth = sc.nextLine();
-            if (!isNullOrBlank(dateOfBirth) && !isValidDate(dateOfBirth, FORMAT_6)) {
+            if (foundModel == null && isNullOrBlank(dateOfBirth)) {
+                System.out.println("Bắt buộc nhập ngày sinh!");
+            } else if (!isNullOrBlank(dateOfBirth) && !isValidDate(dateOfBirth, FORMAT_6)) {
                 System.out.println("Sai định dạng ngày tháng!");
             } else {
                 break;
@@ -123,7 +133,15 @@ public class MainClass {
         }
 
         System.out.println("Mã lớp: ");
-        String classCode = sc.nextLine();
+        String classCode;
+        do {
+            classCode = sc.nextLine();
+            if (foundModel == null && isNullOrBlank(classCode)) {
+                System.out.println("Bắt buộc nhập mã lớp!");
+            } else {
+                break;
+            }
+        } while (sc.hasNextLine());
         if (foundModel != null && isNullOrBlank(classCode)) {
             student.setClassCode(foundModel.getClassCode());
         } else {
@@ -131,26 +149,29 @@ public class MainClass {
         }
 
         if (foundModel == null) {
-            createSubjectsForStudent(student);
+            createSubjectsForStudent(student, foundModel);
             addStudentToArray(student);
         }
 
         System.out.println("==>> " + (foundModel == null ? "Thêm" : "Sửa") + " học sinh thành công <<===");
     }
 
-    private static void createSubjectsForStudent(StudentModel student) {
+    private static void createSubjectsForStudent(StudentModel student, StudentModel foundModel) {
         System.out.println("--- Nhập vào thông tin bảng điểm học sinh ---");
         System.out.println("Nhập số năm:");
         int subjectLen = values().length;
         float mark = 0;
         float sum = 0;
 
-        while (!sc.hasNextInt()) {
-            System.out.println("Số năm không hợp lệ!");
-            sc.next();
-        }
-        int numberOfYear = sc.nextInt();
-        if (numberOfYear < 1) return;
+        int numberOfYear;
+        do {
+            numberOfYear = sc.nextInt();
+            if (foundModel == null && numberOfYear < 1) {
+                System.out.println("Số năm bắt buộc nhập khi thêm mới và phải là số > 0!");
+            } else {
+                break;
+            }
+        } while (sc.hasNextInt());
 
         student.setSubjects(new SubjectModel[numberOfYear][SubjectEnum.values().length]);
 
