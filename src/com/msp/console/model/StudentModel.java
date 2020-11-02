@@ -13,12 +13,8 @@ public class StudentModel {
     private String fullName;
     private Date dateOfBirth;
     private String classCode;
-    private int rating;
     private SubjectModel[][] subjects;
-
-    public StudentModel() {
-        subjects = new SubjectModel[3][SubjectEnum.values().length];
-    }
+    private float avgMark;
 
     public String getCode() {
         return code;
@@ -52,20 +48,20 @@ public class StudentModel {
         this.classCode = classCode;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
     public SubjectModel[][] getSubjects() {
         return subjects;
     }
 
     public void setSubjects(SubjectModel[][] subjects) {
         this.subjects = subjects;
+    }
+
+    public float getAvgMark() {
+        return avgMark;
+    }
+
+    public void setAvgMark(float avgMark) {
+        this.avgMark = avgMark;
     }
 
     @Override
@@ -75,19 +71,9 @@ public class StudentModel {
                 ", Tên đầy đủ='" + fullName + '\'' +
                 ", Ngày sinh=" + convertDatetoString(dateOfBirth, FORMAT_6) +
                 ", Lớp='" + classCode + '\'' +
-                ", Xếp hạng='" + rating + '\'' +
+                ", Điểm trung bình='" + avgMark + '\'' +
                 ", Bảng điểm môn học=[" + parseSubjects() +
                 "]}";
-    }
-
-    public String toStringNoSubjects() {
-        return "Học sinh{" +
-                "Mã='" + code + '\'' +
-                ", Tên đày đủ='" + fullName + '\'' +
-                ", Ngày sinh=" + convertDatetoString(dateOfBirth, FORMAT_6) +
-                ", Lớp='" + classCode + '\'' +
-                ", Xếp hạng='" + rating + '\'' +
-                '}';
     }
 
     private String parseSubjects() {

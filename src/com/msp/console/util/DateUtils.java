@@ -53,7 +53,7 @@ public class DateUtils {
      * @return Date
      */
     public static Date convertStringtoDate(String dateString, String format) {
-        Date date = new Date();
+        Date date = null;
         if (DateUtils.isValidDate(dateString, format)) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(format);
             try {

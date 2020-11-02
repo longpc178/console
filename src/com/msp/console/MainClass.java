@@ -2,6 +2,8 @@ package com.msp.console;
 
 import com.msp.console.model.StudentModel;
 import com.msp.console.model.SubjectModel;
+import com.msp.console.util.StringUtils;
+import com.msp.console.util.SubjectEnum;
 
 import java.util.Calendar;
 import java.util.Scanner;
@@ -65,36 +67,71 @@ public class MainClass {
         } while (selection > 0 && selection < 8);
     }
 
+    private static boolean isStudentCodeExist(String code) {
+        if (students == null || students.length < 1 || isNullOrBlank(code)) return false;
+        for (StudentModel student : students) {
+            if (!isNullOrBlank(student.getCode()) && StringUtils.compareString(student.getCode(), code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void createStudent(StudentModel foundModel) {
         StudentModel student = foundModel == null ? new StudentModel() : foundModel;
         System.out.println("--- Nhập vào thông tin học sinh ---");
         System.out.println("Mã học sinh: ");
         sc.nextLine();
-        student.setCode(sc.nextLine());
+
+        String code;
+        do {
+            code = sc.nextLine();
+            if (isStudentCodeExist(code)) {
+                System.out.println("Mã học sinh đã tồn tại!");
+            } else {
+                break;
+            }
+        } while (sc.hasNextLine());
+        if (foundModel != null && isNullOrBlank(code)) {
+            student.setCode(foundModel.getCode());
+        } else {
+            student.setCode(code);
+        }
 
         System.out.println("Tên học sinh: ");
-        student.setFullName(sc.nextLine());
+        String name = sc.nextLine();
+        if (foundModel != null && isNullOrBlank(name)) {
+            student.setFullName(foundModel.getFullName());
+        } else {
+            student.setFullName(name);
+        }
 
         System.out.println("Ngày sinh (dd/mm/yyyy): ");
-        String dateOfBirth = sc.nextLine();
-        while (!isValidDate(dateOfBirth, FORMAT_6)) {
-            System.out.println("Sai định dạng ngày tháng!");
+        String dateOfBirth;
+        do {
             dateOfBirth = sc.nextLine();
+            if (!isNullOrBlank(dateOfBirth) && !isValidDate(dateOfBirth, FORMAT_6)) {
+                System.out.println("Sai định dạng ngày tháng!");
+            } else {
+                break;
+            }
+        } while (sc.hasNextLine());
+        if (foundModel != null && isNullOrBlank(dateOfBirth)) {
+            student.setDateOfBirth(foundModel.getDateOfBirth());
+        } else {
+            student.setDateOfBirth(convertStringtoDate(dateOfBirth, FORMAT_6));
         }
-        student.setDateOfBirth(convertStringtoDate(dateOfBirth, FORMAT_6));
 
         System.out.println("Mã lớp: ");
-        student.setClassCode(sc.nextLine());
-
-        System.out.println("Xếp hạng học sinh:");
-        while (!sc.hasNextInt()) {
-            System.out.println("Xếp hạng phải là dạng số!");
-            sc.next();
+        String classCode = sc.nextLine();
+        if (foundModel != null && isNullOrBlank(classCode)) {
+            student.setClassCode(foundModel.getClassCode());
+        } else {
+            student.setClassCode(classCode);
         }
-        student.setRating(sc.nextInt());
 
-        createSubjectsForStudent(student);
         if (foundModel == null) {
+            createSubjectsForStudent(student);
             addStudentToArray(student);
         }
 
@@ -102,15 +139,25 @@ public class MainClass {
     }
 
     private static void createSubjectsForStudent(StudentModel student) {
-        System.out.println("--- Nhập vào thông tin bảng điểm học sinh trong 3 năm gần nhất ---");
-        int len = values().length;
+        System.out.println("--- Nhập vào thông tin bảng điểm học sinh ---");
+        System.out.println("Nhập số năm:");
+        int subjectLen = values().length;
         float mark = 0;
+        float sum = 0;
 
-        //3 năm
-        for (int year = 0; year < 3; year++) {
+        while (!sc.hasNextInt()) {
+            System.out.println("Số năm không hợp lệ!");
+            sc.next();
+        }
+        int numberOfYear = sc.nextInt();
+        if (numberOfYear < 1) return;
+
+        student.setSubjects(new SubjectModel[numberOfYear][SubjectEnum.values().length]);
+
+        for (int year = 0; year < numberOfYear; year++) {
             System.out.println("-- Năm thứ " + (year + 1));
 
-            for (int i = 0; i < len; i++) {
+            for (int i = 0; i < subjectLen; i++) {
                 System.out.println(values()[i]); //Tên môn học
 
                 while (true) {
@@ -126,8 +173,10 @@ public class MainClass {
                     }
                 }
                 student.getSubjects()[year][i] = new SubjectModel(values()[i].name(), mark);
+                sum += mark;
             }
         }
+        student.setAvgMark(Math.round(sum / (numberOfYear * 9) * 100) / 100.0f);
     }
 
     private static void addStudentToArray(StudentModel student) {
@@ -135,7 +184,6 @@ public class MainClass {
             students = new StudentModel[]{student};
             return;
         }
-        ;
 
         int len = students.length;
         StudentModel[] tempArr = new StudentModel[len + 1];
@@ -153,7 +201,7 @@ public class MainClass {
     }
 
     private static Integer getStudent(String title) {
-        if (isArrNotEmpty()) return null;
+        if (isArrEmpty()) return null;
 
         System.out.println(title);
         System.out.println("Chọn học sinh theo danh sách dưới đây:");
@@ -198,7 +246,7 @@ public class MainClass {
     }
 
     private static void findStudentByCodeOrName() {
-        if (isArrNotEmpty()) return;
+        if (isArrEmpty()) return;
 
         System.out.println("--- Tìm kiếm học sinh bằng mã hoặc tên ---");
         System.out.println("Nhập mã hoặc tên cần tìm:");
@@ -224,7 +272,7 @@ public class MainClass {
     }
 
     private static void findStudentsByClass() {
-        if (isArrNotEmpty()) return;
+        if (isArrEmpty()) return;
 
         System.out.println("--- Liệt kê danh sách học sinh của một lớp ----");
         System.out.println("Nhập mã lớp cần tìm:");
@@ -253,7 +301,7 @@ public class MainClass {
         StudentModel temp;
         for (int i = 0; i < len; i++) {
             for (int j = i + 1; j < len; j++) {
-                if (students[i].getRating() > students[j].getRating()) {
+                if (students[i].getAvgMark() < students[j].getAvgMark()) {
                     temp = students[i];
                     students[i] = students[j];
                     students[j] = temp;
@@ -263,30 +311,13 @@ public class MainClass {
     }
 
     private static void findTopTen() {
-        if (isArrNotEmpty()) return;
-
-        System.out.println("--- Tìm kiếm top 10 học sinh xuất sắc nhất theo năm ----");
-        System.out.println("Nhập năm cần tìm:");
-        sc.nextLine();
-
-        while (!sc.hasNextInt()) {
-            System.out.println("Năm không hợp lệ!");
-            sc.next();
-        }
-        int val = sc.nextInt();
-
-        //Tìm tất cả rating 1 -> tăng dần tới khi đủ 10 người
+        if (isArrEmpty()) return;
+        System.out.println("--- Tìm kiếm top 10 học sinh xuất sắc nhất ----");
         int amount = 0;
-        Calendar cal = Calendar.getInstance();
         for (StudentModel student : students) {
-            if (student.getDateOfBirth() != null &&
-                    amount < 2 &&
-                    student.getRating() > 0) {
-                cal.setTime(student.getDateOfBirth());
-                if (cal.get(YEAR) == val) {
-                    System.out.println(student.toString());
-                    amount++;
-                }
+            if (amount < 10) {
+                System.out.println(student.toString());
+                amount++;
             }
         }
 
@@ -296,26 +327,16 @@ public class MainClass {
     }
 
     private static void findByAverage() {
-        if (isArrNotEmpty()) return;
-
-        System.out.println("--- Danh sách học sinh có điểm trung binh các môn nhỏ hơn 5 (tổng 3 năm) ----");
-
+        if (isArrEmpty()) return;
+        System.out.println("--- Danh sách học sinh có điểm trung binh các môn nhỏ hơn 5 ----");
         for (StudentModel student : students) {
-            float sum = 0;
-            for (SubjectModel[] subject : student.getSubjects()) {
-                for (SubjectModel sub : subject) {
-                    if (sub != null) {
-                        sum += sub.getMark();
-                    }
-                }
-            }
-            if ((sum / 27) < 5) { //tổng cả 3 năm
-                System.out.println(student.toString() + " - Điểm trung bình: " + (Math.round(sum / 9 * 100) / 100.0));
+            if (student.getAvgMark() < 5) {
+                System.out.println(student.toString());
             }
         }
     }
 
-    private static boolean isArrNotEmpty() {
+    private static boolean isArrEmpty() {
         if (students == null || students.length < 1) {
             System.out.println("==> Không có học sinh nào <==");
             return true;

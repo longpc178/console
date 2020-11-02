@@ -20,9 +20,9 @@ public class SubjectModel {
 
     @Override
     public String toString() {
-        return "SubjectModel{" +
-                "name='" + name + '\'' +
-                ", mark=" + mark +
+        return "Môn học{" +
+                "Tên='" + name + '\'' +
+                ", Điểm=" + mark +
                 '}';
     }
 }
