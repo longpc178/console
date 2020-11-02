@@ -76,6 +76,17 @@ public class StudentModel {
                 "]}";
     }
 
+    public String toStringInThreeYears() {
+        return "Học sinh{" +
+                "Mã='" + code + '\'' +
+                ", Tên đầy đủ='" + fullName + '\'' +
+                ", Ngày sinh=" + convertDatetoString(dateOfBirth, FORMAT_6) +
+                ", Lớp='" + classCode + '\'' +
+                ", Điểm trung bình='" + avgMark + '\'' +
+                ", Bảng điểm môn học=[" + parseSubjectThreeYear() +
+                "]}";
+    }
+
     private String parseSubjects() {
         StringBuilder val = new StringBuilder();
         if (subjects != null && subjects.length > 0) {
@@ -85,6 +96,22 @@ public class StudentModel {
                         val.append(sub.toString());
                     }
                 }
+            }
+        }
+        return val.toString();
+    }
+
+    private String parseSubjectThreeYear() {
+        StringBuilder val = new StringBuilder();
+        if (subjects != null && subjects.length > 0) {
+            int subjectsLen = subjects.length;
+            for (int i = subjectsLen - 3; i < subjectsLen; i++) {
+                for (SubjectModel sub : subjects[i]) {
+                    if (sub != null) {
+                        val.append(sub.toString());
+                    }
+                }
+                val.append(" -- ");
             }
         }
         return val.toString();

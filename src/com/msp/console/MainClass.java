@@ -166,8 +166,8 @@ public class MainClass {
         int numberOfYear;
         do {
             numberOfYear = sc.nextInt();
-            if (foundModel == null && numberOfYear < 1) {
-                System.out.println("Số năm bắt buộc nhập khi thêm mới và phải là số > 0!");
+            if (foundModel == null && numberOfYear < 3) {
+                System.out.println("Số năm bắt buộc nhập khi thêm mới và phải là số >= 3!");
             } else {
                 break;
             }
@@ -282,7 +282,7 @@ public class MainClass {
         for (StudentModel student : students) {
             if ((!isNullOrBlank(student.getFullName()) && contains(student.getFullName(), val)) ||
                     (!isNullOrBlank(student.getCode()) && contains(student.getCode(), val))) {
-                System.out.println(student.toString());
+                System.out.println(student.toStringInThreeYears());
                 isHasStudent = true;
             }
         }
